@@ -1,6 +1,8 @@
 import React from 'react'
 import { ThemeProvider } from 'styled-components/native'
 
+import { NavigationContainer } from '@react-navigation/native'
+
 import {
   useFonts,
   Poppins_400Regular,
@@ -10,9 +12,8 @@ import {
 
 import AppLoading from 'expo-app-loading'
 
-import { Register } from './src/screens/Register'
-
 import theme from './src/global/styles/theme'
+import { AppRoutes } from './src/routes/app.routes'
 
 export default function App() {
 
@@ -27,7 +28,9 @@ export default function App() {
 
   return (
     <ThemeProvider theme={theme}>
-      <Register />
+      <NavigationContainer>
+        <AppRoutes />
+      </NavigationContainer>
     </ThemeProvider>
   )
 }
