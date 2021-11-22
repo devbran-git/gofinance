@@ -1,3 +1,7 @@
+import 'react-native-gesture-handler'
+import 'intl'
+import 'intl/locale-data/jsonp/pt-BR'
+
 import React from 'react'
 import { ThemeProvider } from 'styled-components/native'
 
@@ -13,6 +17,7 @@ import {
 import AppLoading from 'expo-app-loading'
 
 import theme from './src/global/styles/theme'
+
 import { AppRoutes } from './src/routes/app.routes'
 
 export default function App() {

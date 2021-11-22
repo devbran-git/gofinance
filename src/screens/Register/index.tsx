@@ -7,6 +7,10 @@ import {
 } from 'react-native';
 import * as Yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup'
+import AsyncStorage from '@react-native-async-storage/async-storage'
+import uuid from 'react-native-uuid'
+
+import { useNavigation } from '@react-navigation/native'
 import { useForm } from 'react-hook-form'
 
 import { InputForm } from '../../components/Form/InputForm'
@@ -41,13 +45,17 @@ interface FormData {
   amount: string
 }
 
+
 export function Register() {
+  const { navigate } = useNavigation()
+
   const [transactionType, setTransactionType] = useState('')
   const [categoryModalOpen, setCategoryModalOpen] = useState(false)
 
   const {
     control,
     handleSubmit,
+    reset,
     formState: { errors }
   } = useForm({
     resolver: yupResolver(schema)
@@ -58,7 +66,7 @@ export function Register() {
     name: 'Categoria'
   })
 
-  function handleTransactionsTypeSelect(type: 'up' | 'down') {
+  function handleTransactionsTypeSelect(type: 'positive' | 'negative') {
     setTransactionType(type)
   }
 
@@ -70,7 +78,7 @@ export function Register() {
     setCategoryModalOpen(false)
   }
 
-  function handleRegister(form: FormData) {
+  async function handleRegister(form: FormData) {
 
     if (!transactionType)
       return Alert.alert('Selecione o tipo da transação');
@@ -79,14 +87,43 @@ export function Register() {
       return Alert.alert('Selecione a categoria')
 
 
-    const data = {
+    const newTransaction = {
+      id: String(uuid.v4()),
       name: form.name,
       amount: form.amount,
-      transactionType,
+      type: transactionType,
       category: category.key
     }
 
-    console.log(data)
+    try {
+      const dataKey = '@gofinance:transactions'
+
+      // recuperar o que tem no asyncstorage 
+      const data = await AsyncStorage.getItem(dataKey)
+
+      // converter para array de objetos ou vazio
+      const currentData = data ? JSON.parse(data) : []
+
+      // formatar novo array de objetos
+      const dataFormatted = [
+        ...currentData,
+        newTransaction
+      ]
+
+      // acrescentar ao novo objeto
+      await AsyncStorage.setItem(dataKey, JSON.stringify(dataFormatted))
+
+      reset()
+      setTransactionType('')
+      setCategory({
+        key: 'category',
+        name: 'Categoria'
+      })
+
+      navigate('Lançamentos')
+    } catch (error) {
+      console.log('Deu ruim, mano', error)
+    }
   }
 
   return (
@@ -119,14 +156,14 @@ export function Register() {
               <TransactionTypeButton
                 type="up"
                 title="Income"
-                onPress={() => handleTransactionsTypeSelect('up')}
-                isActive={transactionType === 'up'}
+                onPress={() => handleTransactionsTypeSelect('positive')}
+                isActive={transactionType === 'positive'}
               />
               <TransactionTypeButton
                 type="down"
                 title="Outcome"
-                onPress={() => handleTransactionsTypeSelect('down')}
-                isActive={transactionType === 'down'}
+                onPress={() => handleTransactionsTypeSelect('negative')}
+                isActive={transactionType === 'negative'}
               />
             </TransactionsTypes>
 
