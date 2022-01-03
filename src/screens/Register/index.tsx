@@ -92,7 +92,8 @@ export function Register() {
       name: form.name,
       amount: form.amount,
       type: transactionType,
-      category: category.key
+      category: category.key,
+      date: new Date()
     }
 
     try {

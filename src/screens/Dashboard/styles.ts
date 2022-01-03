@@ -4,11 +4,9 @@ import { BorderlessButton } from 'react-native-gesture-handler'
 import { Feather } from '@expo/vector-icons'
 import { RFPercentage, RFValue } from 'react-native-responsive-fontsize'
 import { getBottomSpace, getStatusBarHeight } from 'react-native-iphone-x-helper'
-import { DataListProps } from '.'
-
+import { DataListProps } from '../Dashboard'
 
 export const Container = styled.View`
-width: 100%;
 flex: 1;
 background-color: ${({ theme }) => theme.colors.background};
 `
