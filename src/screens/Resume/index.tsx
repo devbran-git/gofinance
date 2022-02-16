@@ -1,10 +1,6 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { ActivityIndicator } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { VictoryPie } from 'victory-native';
-import { HistoryCard } from '../../components/HistoryCard';
-import { categories } from '../../utils/categories';
-
+import { useFocusEffect } from '@react-navigation/native';
 import {
   Container,
   Header,
@@ -17,11 +13,18 @@ import {
   Month,
   LoadContainer,
 } from './styles';
+
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useAuth } from '../../hooks/auth';
+
+import { VictoryPie } from 'victory-native';
+import { HistoryCard } from '../../components/HistoryCard';
+import { categories } from '../../utils/categories';
+
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useTheme } from 'styled-components';
 import { addMonths, format, subMonths } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { useFocusEffect } from '@react-navigation/native';
 
 interface TransactionData {
   type: 'positive' | 'negative';
@@ -41,6 +44,8 @@ interface TotalByCategory {
 }
 
 export function Resume() {
+  const { user } = useAuth();
+
   const theme = useTheme();
 
   const [totalByCategories, setTotalByCategories] = useState<TotalByCategory[]>(
@@ -60,7 +65,7 @@ export function Resume() {
   }
 
   async function loadData() {
-    const dataKey = '@gofinance:transactions';
+    const dataKey = `@gofinance:transactions_user:${user.id}`;
     const response = await AsyncStorage.getItem(dataKey);
     const responseFormatted = response ? JSON.parse(response) : [];
 
